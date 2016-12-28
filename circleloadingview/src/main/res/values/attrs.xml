@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleLoadingView">
+
+        <attr name="size">
+            <enum name="large" value="0"/>
+            <enum name="normal" value="1"/>
+        </attr>
+        <attr name="bg_color" format="color" />
+
+        <attr name="progress_color" format="color" />
+
+        <attr name="progress_second_color" format="color" />
+
+    </declare-styleable>
+</resources>
