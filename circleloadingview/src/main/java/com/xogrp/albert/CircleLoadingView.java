@@ -17,6 +17,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -41,7 +42,7 @@ import java.lang.annotation.RetentionPolicy;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class CircleLoadingView extends ImageView{
+public class CircleLoadingView extends AppCompatImageView{
     private static final int SHADOW_COLOR = 0xFFFAFAFA;
     private MaterialProgressDrawable mMaterialProgressDrawable;
 
