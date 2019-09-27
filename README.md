@@ -1,11 +1,13 @@
 ### Material Circular progress bar
 
+[![](https://jitpack.io/v/sovegetables/circleloadingview.svg)](https://jitpack.io/#sovegetables/circleloadingview)
+
 ### Screenshots
 ![Image](./screenshot/circleloadingview.gif)
 
 ### Setup
 ```gradle
-compile 'com.xogrp.albert:circleloadingview:1.0'
+compile 'com.github.sovegetables:circleloadingview:0.1.0'
 ```
 
 ```xml
