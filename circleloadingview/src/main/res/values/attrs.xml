@@ -8,9 +8,15 @@
         </attr>
         <attr name="bg_color" format="color" />
 
+        <attr name="show_arrow" format="boolean" />
+
         <attr name="progress_color" format="color" />
 
         <attr name="progress_second_color" format="color" />
+
+        <attr name="progress_third_color" format="color" />
+
+
 
     </declare-styleable>
 </resources>

@@ -1,10 +1,8 @@
 package com.xogrp.albert.example;
 
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-
-import com.xogrp.albert.CircleLoadingView;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity {

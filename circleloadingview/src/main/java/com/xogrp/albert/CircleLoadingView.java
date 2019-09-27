@@ -12,17 +12,18 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.IntDef;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.AppCompatImageView;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.IntDef;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.appcompat.widget.AppCompatImageView;
+
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,18 +45,17 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class CircleLoadingView extends AppCompatImageView{
     private static final int SHADOW_COLOR = 0xFFFAFAFA;
-    private MaterialProgressDrawable mMaterialProgressDrawable;
-
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LARGE, NORMAL})
     public @interface Size {}
 
-    public static final int LARGE = MaterialProgressDrawable.LARGE;
-    public static final int NORMAL = MaterialProgressDrawable.DEFAULT;
+    public static final int LARGE = CircularProgressDrawable.LARGE;
+    public static final int NORMAL = CircularProgressDrawable.DEFAULT;
 
     private static final boolean UP_LOLLIPOP = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
     private static final ShadowHelperCompat IMPL;
+    private ProgressDrawableCreator mCreator;
 
     static {
         IMPL = UP_LOLLIPOP ? new LollipopShadowHelper() : new ShadowHelper();
@@ -78,38 +78,40 @@ public class CircleLoadingView extends AppCompatImageView{
 
     private void init(Context context, AttributeSet attrs) {
         ViewCompat.setBackground(this, IMPL.createShadowShapeDrawable(context, this, SHADOW_COLOR));
-        mMaterialProgressDrawable = new MaterialProgressDrawable(context, this);
-        mMaterialProgressDrawable.setAlpha(255);
-
+        mCreator = new ProgressDrawableCreator.CircularProgressDrawableCreator();
+        mCreator.createDrawable(context, this);
+        mCreator.getDrawable().setAlpha(255);
         if(attrs != null){
             TypedArray a = context.obtainStyledAttributes(attrs,
                     R.styleable.CircleLoadingView);
             setBackgroundColor(a.getColor(R.styleable.CircleLoadingView_bg_color, SHADOW_COLOR));
             int size = a.getInteger(R.styleable.CircleLoadingView_size, NORMAL);
             if(size == NORMAL) {
-                mMaterialProgressDrawable.updateSizes(MaterialProgressDrawable.DEFAULT);
+                mCreator.setSize(CircularProgressDrawable.DEFAULT);
             }else if(size == LARGE){
-                mMaterialProgressDrawable.updateSizes(MaterialProgressDrawable.LARGE);
+                mCreator.setSize(CircularProgressDrawable.LARGE);
             }
-
             int color1 = a.getColor(R.styleable.CircleLoadingView_progress_color, Color.BLACK);
             int color2 = a.getColor(R.styleable.CircleLoadingView_progress_second_color, Color.BLACK);
-            setColorSchemeColors(color1, color2);
+            int color3 = a.getColor(R.styleable.CircleLoadingView_progress_third_color, Color.BLACK);
+            setColorSchemeColors(color1, color2, color3);
+            boolean showArrow = a.getBoolean(R.styleable.CircleLoadingView_show_arrow, false);
+            mCreator.setArrowEnabled(showArrow);
             a.recycle();
         }
-        setImageDrawable(mMaterialProgressDrawable);
+        setImageDrawable(mCreator.getDrawable());
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mMaterialProgressDrawable.start();
+        mCreator.start();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mMaterialProgressDrawable.stop();
+        mCreator.stop();
     }
 
     @Override
@@ -136,7 +138,7 @@ public class CircleLoadingView extends AppCompatImageView{
      * @param colors colors
      */
     public void setColorSchemeColors(int... colors) {
-        mMaterialProgressDrawable.setColorSchemeColors(colors);
+        mCreator.setColorSchemeColors(colors);
     }
 
     /**
@@ -145,8 +147,8 @@ public class CircleLoadingView extends AppCompatImageView{
      */
     public void setSize(@Size int size) {
         setImageDrawable(null);
-        mMaterialProgressDrawable.updateSizes(size);
-        setImageDrawable(mMaterialProgressDrawable);
+        mCreator.setSize(size);
+        setImageDrawable(mCreator.getDrawable());
     }
 
     /**
@@ -165,7 +167,7 @@ public class CircleLoadingView extends AppCompatImageView{
      */
     public void setProgressBackgroundColorSchemeColor(@ColorInt int color) {
         setBackgroundColor(color);
-        mMaterialProgressDrawable.setBackgroundColor(color);
+        mCreator.setBackgroundColor(color);
     }
 
 
@@ -179,13 +181,14 @@ public class CircleLoadingView extends AppCompatImageView{
     private static class LollipopShadowHelper implements ShadowHelperCompat {
 
         private static final int SHADOW_ELEVATION = 4;
+        private float mDensity;
 
         @Override
         public Drawable createShadowShapeDrawable(Context context, final CircleLoadingView circleLoadingView, int shadowColor) {
-            final float density = context.getResources().getDisplayMetrics().density;
+            mDensity = context.getResources().getDisplayMetrics().density;
             ShapeDrawable circle = new ShapeDrawable(new OvalShape());
             circle.getPaint().setColor(shadowColor);
-            final float elevation = SHADOW_ELEVATION * density;
+            final float elevation = SHADOW_ELEVATION * mDensity;
             circleLoadingView.setElevation(elevation);
 
             circleLoadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -239,7 +242,7 @@ public class CircleLoadingView extends AppCompatImageView{
             final int shadowXOffset = (int) (density * X_OFFSET);
             OvalShape oval = new OvalShadow(mShadowRadius, diameter);
             ShapeDrawable circle = new ShapeDrawable(oval);
-            ViewCompat.setLayerType(circleLoadingView, ViewCompat.LAYER_TYPE_SOFTWARE, circle.getPaint());
+            circleLoadingView.setLayerType(View.LAYER_TYPE_SOFTWARE, circle.getPaint());
             circle.getPaint().setShadowLayer(mShadowRadius, shadowXOffset, shadowYOffset,
                     KEY_SHADOW_COLOR);
             final int padding = mShadowRadius;

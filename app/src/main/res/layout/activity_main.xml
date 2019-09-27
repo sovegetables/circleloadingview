@@ -21,12 +21,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:size="large"
+        app:progress_color="@color/colorAccent"
+        app:show_arrow="true"
+        app:progress_second_color="@color/colorPrimary"
         />
 
     <com.xogrp.albert.CircleLoadingView
         android:id="@+id/clv2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:progress_color="@color/colorAccent"
         app:bg_color="@color/colorPrimary"
         />
 
@@ -34,6 +38,7 @@
         android:id="@+id/clv3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:progress_color="@color/colorAccent"
         />
 
 </LinearLayout>
