@@ -3,7 +3,9 @@
 [![](https://jitpack.io/v/sovegetables/circleloadingview.svg)](https://jitpack.io/#sovegetables/circleloadingview)
 
 ### Screenshots
-![Image](./screenshot/circleloadingview.gif)
+<p align="left">
+	<img src="http://www.liuguangbo.com:9020/circleloadingview.gif" width="270">
+</p>
 
 ### Setup
 ```gradle
