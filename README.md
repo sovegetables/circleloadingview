@@ -4,7 +4,7 @@
 
 ### Screenshots
 <p align="left">
-	<img src="http://www.liuguangbo.com:9020/circleloadingview.gif" width="270">
+	<img src="./screenshot/circleloadingview.gif" width="270">
 </p>
 
 ### Setup
